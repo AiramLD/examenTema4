@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suscripción</title>
+    <style>
+        .error {
+            color: red;
+        }
+
+        .success {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Formulario de Suscripción</h1>
+    <form id="suscripcionForm" method="post" onsubmit="return validarFormulario()">
+        <fieldset>
+            <legend>Datos personales</legend>
+            <p>
+                <label for="nombre">Nombre: </label>
+                <input type="text" name="nombre" id="nombre" required minlength="3" oninput="this.value = this.value.toUpperCase()">
+                <span class="error" id="nombreError"></span>
+            </p>
+            <p>
+                <label for="dni">DNI: </label>
+                <input type="text" name="dni" id="dni" pattern="[0-9]{8}-[A-Z]" required>
+                <span class="error" id="dniError"></span>
+            </p>
+        </fieldset>
+        <fieldset>
+            <legend>Tipo de Suscripción</legend>
+            <span class="error" id="tipoError"></span><br>
+            <input type="radio" name="tipo" id="basico" value="basico" checked required>
+            <label for="basico">Básico</label>
+            <input type="radio" name="tipo" id="estandar" value="estandar" required>
+            <label for="estandar">Estándar</label>
+            <input type="radio" name="tipo" id="premium" value="premium" required>
+            <label for="premium">Premium</label>
+            <input type="radio" name="tipo" id="elite" value="elite" required>
+            <label for="elite">Élite</label>            
+        </fieldset>
+        <fieldset>
+            <legend>Temas</legend>
+            <div id="temas"></div>
+            <span class="error" id="temaError"></span><br>
+        </fieldset>
+        <p>
+            <input type="reset" value="Borrar">
+            <input type="submit" value="Suscribir" id="submitBtn">
+        </p>
+        <p id="successMessage" class="success" style="display: none;">¡Te has suscrito con éxito!</p>
+    </form>
+    <script>
+        function validarFormulario() {
+            var nombre = document.getElementById('nombre').value;
+            var dni = document.getElementById('dni').value;
+            var tipoSuscripcion = document.querySelector('input[name="tipo"]:checked');
+            var temasSeleccionados = document.querySelectorAll('input[name="temas"]:checked');
+
+            var nombreError = document.getElementById('nombreError');
+            var dniError = document.getElementById('dniError');
+            var tipoError = document.getElementById('tipoError');
+            var temaError = document.getElementById('temaError');
+
+            nombreError.textContent = '';
+            dniError.textContent = '';
+            tipoError.textContent = '';
+            temaError.textContent = '';
+
+            // Validar nombre
+            if (nombre.length < 3) {
+                nombreError.textContent = 'El nombre debe tener al menos 3 caracteres.';
+                return false;
+            }
+
+            // Validar DNI
+            if (!/^\d{8}-[A-Z]$/.test(dni)) {
+                dniError.textContent = 'El formato del DNI debe ser: 12345678-A.';
+                return false;
+            }
+
+            // Validar tipo de suscripción
+            if (!tipoSuscripcion) {
+                tipoError.textContent = 'Debe seleccionar un tipo de suscripción.';
+                return false;
+            }
+
+            // Validar temas seleccionados
+            var temasRequeridos = {
+                'basico': 1,
+                'estandar': 3,
+                'premium': 6,
+                'elite': 13 // Todos los temas
+            };
+
+            if (temasSeleccionados.length !== temasRequeridos[tipoSuscripcion.value]) {
+                temaError.textContent = `Debe seleccionar exactamente ${temasRequeridos[tipoSuscripcion.value]} tema(s).`;
+                return false;
+            }
+
+            // Mostrar mensaje de éxito
+            var successMessage = document.getElementById('successMessage');
+            successMessage.style.display = 'block';
+
+            // Evitar que el formulario se envíe realmente
+            return false;
+        }
+
+        // Llenar los temas dinámicamente
+        const temas = ['Cocina', 'Futbol', 'Salud', 'Arte', 'Sucesos', 'Política', 'Economía', 'Música', 'Cine', 'Baloncesto', 'Javascript', 'Vinos', 'Papiroflexia'];
+        var temasDiv = document.getElementById('temas');
+        temas.forEach(function(tema) {
+            var input = document.createElement('input');
+            input.type = 'checkbox';
+            input.name = 'temas';
+            input.value = tema;
+            temasDiv.appendChild(input);
+            var label = document.createElement('label');
+            label.appendChild(document.createTextNode(tema));
+            temasDiv.appendChild(label);
+            temasDiv.appendChild(document.createElement('br'));
+        });
+    </script>
+</body>
+</html>
